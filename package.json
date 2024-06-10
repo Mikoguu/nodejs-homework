@@ -10,6 +10,8 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "eslint": "^9.4.0"
+    "eslint": "^9.4.0",
+    "express": "^4.19.2",
+    "timer.js": "^1.0.4"
   }
 }

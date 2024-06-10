@@ -3,10 +3,11 @@ import express from 'express';
 const app = express();
 
 let timestamp = Date.now();
-const DELAY = 1000;
-const LIMIT = timestamp + 20000;
 
-const PORT = 3000;
+const limit = timestamp + parseInt(process.env.LIMIT); 
+const delay = parseInt(process.env.DELAY);
+const port = parseInt(process.env.PORT);
+
 
 let connections = [];
 
@@ -23,20 +24,20 @@ setTimeout(function run() {
     console.log(date);
 
     connections.map(res => {
-        if (timestamp > LIMIT) {
+        if (timestamp > limit) {
             res.write("END\n");
             res.end();
-        } else if (timestamp == LIMIT) {
-            res.write(`Server disconnection time is: ${date}\n`);
+        } else if (timestamp == limit) {
+            res.write(`Server disconnection date is: ${date}\n`);
         } else {
             res.write(`Current time is: ${date}\n`);
         }
     });
  
-  setTimeout(run, DELAY);
-}, DELAY);
+  setTimeout(run, delay);
+}, delay);
 
-app.listen(PORT, () => {
+app.listen(port, () => {
     console.log("Server is running on port 3000");
 })
 

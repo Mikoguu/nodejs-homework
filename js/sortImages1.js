@@ -1,4 +1,3 @@
-import { read } from 'fs';
 import fs from 'fs/promises';
 import path from 'path';
 
@@ -21,7 +20,7 @@ async function throughDirectory(dir) {
         if (!stat.isDirectory()) {
             images.push(absolute);
         } else {  
-            await throughDirectory(absolute);
+            throughDirectory(absolute);
         }
     }
 };

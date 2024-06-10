@@ -1,50 +1,50 @@
-import fs from 'fs';
+import fs from 'fs/promises';
 import path from 'path';
-
-const mainDirectory = process.cwd();
-const unsortedImagesDirectory = 'unsortedImages';
-const targetDirectory = 'images';
 
 const alphabet = 'абвгдеёжзийклмнопрстуфхцчшщъыьэюя'.split('');
 
-if (!fs.existsSync(targetDirectory)) {
-    fs.mkdirSync(`./${targetDirectory}`, err => {
-        throw err;
-    });
-};
+const sortedImagesDir = path.join(process.cwd(), 'images'); 
+const unsortedImagesDirectory = path.join(process.cwd(), 'unsortedImages');
+const allImages = [];
 
-for (let i = 0; i < alphabet.length; i++) {
-    if (!fs.existsSync(`${targetDirectory}/${alphabet[i]}`)) {
-        fs.mkdirSync(`${targetDirectory}/${alphabet[i]}`, err => {
-            throw err;
-        });
-    };
-}; 
 
-let images  = [];
-  
-function throughDirectory(dir) {
-    fs.readdirSync(dir).forEach(file => {
-        const absolute = path.join(dir, file);
-        if (fs.statSync(absolute).isDirectory()) {
-            return throughDirectory(absolute);
-          } else {  
-            return images.push(absolute);
-          }
-      });
-    };
-
-throughDirectory(`${mainDirectory}/${unsortedImagesDirectory}`);
-
-images.forEach(item => {
-    for (let i = 0; i < alphabet.length; i++) {
-        let itemData = path.parse(item);
-        if (alphabet[i] === itemData.name[0]) {
-            fs.rename( item, `${mainDirectory}/${targetDirectory}/${alphabet[i]}/${itemData.base}`, err => {
-                if (err) {
-                    throw err;
-                };
-            });
+fs.mkdir(sortedImagesDir)
+    .catch(error => {
+        if (error && error.code !== 'EEXIST') {
+            console.error(error); 
+        }
+    })
+    .then(() => {
+        for (let letter of alphabet) {
+            fs.mkdir(`${sortedImagesDir}/${letter}`)
+                .catch(error => {
+                    if (error && error.code !== 'EEXIST') {
+                        console.error(error); 
+                    }
+                })
         };
-    };
-});
+    })
+    .then(() => {
+        fs.readdir(unsortedImagesDirectory, { recursive: true }).then(files => {
+            for (let file of files) {
+                const absolute = path.join(unsortedImagesDirectory, file);
+                fs.stat(absolute)
+                .then((stats) => {
+                    if (!stats.isDirectory()) {
+                        allImages.push(absolute);
+
+                    }
+                })
+                .then(() => {
+                    allImages.forEach(item => {
+                        let itemData = path.parse(item);
+                        for (let i = 0; i < alphabet.length; i++) {
+                            if (alphabet[i] === itemData.name[0]) {
+                                fs.rename( item, `${sortedImagesDir}/${alphabet[i]}/${itemData.base}`);
+                            };
+                        };
+                    }); 
+                 })
+            }
+        });
+    })
