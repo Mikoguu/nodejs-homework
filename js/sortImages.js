@@ -47,9 +47,7 @@ fs.mkdir(sortedImagesDir)
                         for (let i = 0; i < alphabet.length; i++) {
                             if (alphabet[i] === itemData.name[0] || alphabet[i].toUpperCase() === itemData.name[0].toUpperCase()) {
                                 fs.rename( item, `${sortedImagesDir}/${alphabet[i]}/${itemData.base}`);
-                            } else {
-                                fs.rename( item, `${sortedImagesDir}/другое/${itemData.base}`);
-                            }
+                            };
                         };
                     }); 
                  })
